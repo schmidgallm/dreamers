@@ -1,0 +1,29 @@
+{
+  "name": "dreamers",
+  "version": "1.0.0",
+  "description": "web app for authors to share, collaborate, and publish thier stories",
+  "main": "server/index.js",
+  "scripts": {
+    "dev": "nodemon server/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/schmidgallm/dreamers.git"
+  },
+  "author": "Michael Schmidgall",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/schmidgallm/dreamers/issues"
+  },
+  "homepage": "https://github.com/schmidgallm/dreamers#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.7.13",
+    "morgan": "^1.9.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.1"
+  }
+}

@@ -20,6 +20,10 @@ app.use(cors());
 const connectDB = require('../db/index.js');
 connectDB();
 
+// init api routes
+const userRoute = require('../routes/api/users');
+app.use('/users', userRoute);
+
 // Init static assets if deployed
 if (process.env.NODE_ENV === 'production') {
 	// init static folder

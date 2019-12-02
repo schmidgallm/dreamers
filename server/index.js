@@ -22,7 +22,7 @@ connectDB();
 
 // init api routes
 const userRoute = require('../routes/api/users');
-app.use('/users', userRoute);
+app.use('/api/v1/users', userRoute);
 
 // Init static assets if deployed
 if (process.env.NODE_ENV === 'production') {

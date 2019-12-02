@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
-	_id: Schema.Types.ObjectId,
 	name: {
 		type: String,
 		required: true
@@ -16,14 +15,6 @@ const UserSchema = new Schema({
 	password: {
 		type: String,
 		required: true
-	},
-	status: {
-		type: String,
-		default: true
-	},
-	rating: {
-		type: Number,
-		default: 0
 	},
 	date: {
 		type: Date,

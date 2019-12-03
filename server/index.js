@@ -23,6 +23,8 @@ connectDB();
 // init api routes
 const userRoute = require('../routes/api/users');
 app.use('/api/v1/users', userRoute);
+const authRoute = require('../routes/api/auth');
+app.use('/api/v1/auth', authRoute);
 
 // Init static assets if deployed
 if (process.env.NODE_ENV === 'production') {

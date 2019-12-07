@@ -2,6 +2,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 const express = require("express");
 const router = express.Router();
+const { check, validationResult } = require("express-validator");
 const auth = require("../../middleware/auth");
 
 const Profile = require("../../models/Profile");
@@ -30,4 +31,10 @@ router.get("/me", auth, async (req, res) => {
   }
 });
 
+// @route   POST api/v1/profile/me
+// @desc    Create or update user profile
+// @access  PRIVATE
+router.post("/", auth, (req, res) => {
+  res.send("post worked");
+});
 module.exports = router;

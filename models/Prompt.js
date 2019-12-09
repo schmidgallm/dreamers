@@ -4,11 +4,11 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const PromptSchema = new Schema({
-  title: {
-    type: String,
-    required: true
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'users'
   },
-  content: {
+  title: {
     type: String,
     required: true
   },
@@ -23,6 +23,10 @@ const PromptSchema = new Schema({
   publishedDate: {
     type: Date,
     default: Date.now
+  },
+  content: {
+    type: String,
+    required: true
   }
 });
 

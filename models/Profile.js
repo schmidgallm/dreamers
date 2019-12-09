@@ -24,6 +24,12 @@ const ProfileSchema = new Schema({
   },
   favoriteAuthor: {
     type: String
+  },
+  prmopts: {
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'prompts' }]
+  },
+  stories: {
+    type: { type: mongoose.Schema.Types.ObjectId, ref: 'stories' }
   }
 });
 

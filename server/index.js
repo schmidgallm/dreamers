@@ -7,6 +7,7 @@ const connectDB = require('../db/index.js');
 const userRoute = require('../routes/api/users');
 const authRoute = require('../routes/api/auth');
 const profileRoute = require('../routes/api/profiles');
+const storyRoute = require('../routes/api/stories');
 
 // init app
 const app = express();
@@ -28,6 +29,7 @@ connectDB();
 app.use('/api/v1/users', userRoute);
 app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/profile', profileRoute);
+app.use('/api/v1/story', storyRoute);
 
 // Init static assets if deployed
 if (process.env.NODE_ENV === 'production') {

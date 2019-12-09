@@ -1,13 +1,9 @@
-const dotenv = require('dotenv');
 const express = require('express');
-
-const router = express.Router();
-dotenv.config();
-
 const auth = require('../../middleware/auth');
-
 const Profile = require('../../models/Profile');
 const User = require('../../models/User');
+
+const router = express.Router();
 
 // @route   GET api/v1/profile/me
 // @desc    Get current users profile

@@ -5,7 +5,7 @@ const { Schema } = mongoose;
 
 const ProfileSchema = new Schema({
   user: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'users'
   },
   penName: {
@@ -26,10 +26,10 @@ const ProfileSchema = new Schema({
     type: String
   },
   prmopts: {
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'prompts' }]
+    type: [{ type: Schema.Types.ObjectId, ref: 'prompts' }]
   },
   stories: {
-    type: { type: mongoose.Schema.Types.ObjectId, ref: 'stories' }
+    type: [{ type: Schema.Types.ObjectId, ref: 'stories' }]
   }
 });
 

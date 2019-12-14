@@ -13,7 +13,7 @@ router.get('/me', auth, async (req, res) => {
     // fine profile from user and populate with name from users collection
     const profile = await Profile.findOne({
       user: req.user.id
-    }).populate('users', ['name']);
+    }).populate('stories', ['title', 'genre', 'upvotes', 'publishedDate']);
 
     // if not pofile of user exists
     if (!profile) {
@@ -21,7 +21,7 @@ router.get('/me', auth, async (req, res) => {
     }
 
     // return profile
-    return res.json(profile);
+    res.json(profile);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
@@ -33,16 +33,27 @@ router.get('/me', auth, async (req, res) => {
 // @access  PRIVATE
 router.post('/', auth, async (req, res) => {
   // destructure request body
-  const { penName, rating, bio, favoriteBook, favoriteAuthor } = req.body;
+  const {
+    penName,
+    rating,
+    bio,
+    favoriteBook,
+    favoriteAuthor,
+    stories,
+    prompts
+  } = req.body;
 
   // init profile object
   const profileFields = {};
   profileFields.user = req.user.id;
+
   if (penName) profileFields.penName = penName;
   if (rating) profileFields.rating = rating;
   if (bio) profileFields.bio = bio;
   if (favoriteBook) profileFields.favoriteBook = favoriteBook;
   if (favoriteAuthor) profileFields.favoriteAuthor = favoriteAuthor;
+  if (stories) profileFields.stories = stories;
+  if (prompts) profileFields.prompts = prompts;
 
   try {
     let profile = await Profile.findOne({ user: req.user.id });

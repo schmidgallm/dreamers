@@ -5,7 +5,7 @@ const { Schema } = mongoose;
 
 const StorySchema = new Schema({
   user: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'users'
   },
   title: {

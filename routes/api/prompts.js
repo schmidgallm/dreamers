@@ -1,26 +1,25 @@
 const express = require('express');
 const { check, validationResult } = require('express-validator');
 const auth = require('../../middleware/auth');
-const Story = require('../../models/Story');
+const Prompt = require('../../models/Prompt');
 const Profile = require('../../models/Profile');
 
 const router = express.Router();
 
-// @route   POST api/v1/stories
-// @desc    CREATE story
+// @route   GET api/v1/myprompts
+// @desc    GET logged in users prompts
 // @access  Public
-router.get('/mystories', auth, async (req, res) => {
+router.get('/myprompts', auth, async (req, res) => {
   try {
     const profile = await Profile.findOne({
       user: req.user.id
-    }).populate('stories', ['title']);
+    }).populate('prompts', ['title', 'genre', 'upvotes', 'publishedDate']);
 
     // if no profile of user exists
     if (!profile) {
-      return res.status(400).json({ msg: 'No stories created yet.' });
+      return res.status(400).json({ msg: 'No prompts created yet.' });
     }
 
-    console.log(profile);
     // return profile
     return res.json(profile);
   } catch (err) {
@@ -28,8 +27,8 @@ router.get('/mystories', auth, async (req, res) => {
     res.status(500).send('Server Error');
   }
 });
-// @route   POST api/v1/stories
-// @desc    CREATE story
+// @route   POST api/v1/prompt
+// @desc    CREATE prompt
 // @access  Public
 router.post(
   '/',
@@ -55,27 +54,27 @@ router.post(
       // destructure request body
       const { title, genre, content } = req.body;
 
-      // CREATE story and save to db
-      const story = new Story({
+      // CREATE prompt and save to db
+      const prompt = new Prompt({
         user: req.user.id,
         title,
         genre,
         content
       });
 
-      await story.save();
+      await prompt.save();
 
       // push new story to profile model
       const profile = await Profile.findOne({ user: req.user.id });
       if (profile) {
-        await profile.update({ $push: { stories: story.id } });
+        await profile.update({ $push: { prompts: prompt.id } });
       } else {
         return res.status(400).json({
-          msg: 'Must first create a profile before submitting stories'
+          msg: 'Must first create a profile before submitting prompts'
         });
       }
 
-      return res.status(200).json(story);
+      return res.status(200).json(prompt);
     } catch (err) {
       console.warn(err.message);
       res.status(500).send('Server Error');

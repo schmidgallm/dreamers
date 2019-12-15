@@ -1,12 +1,10 @@
 // Dependencies
 const mongoose = require('mongoose');
 
-const { Schema } = mongoose;
-
-const ProfileSchema = new Schema({
+const ProfileSchema = new mongoose.Schema({
   user: {
-    type: Schema.Types.ObjectId,
-    ref: 'users'
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'user'
   },
   penName: {
     type: String,
@@ -25,11 +23,11 @@ const ProfileSchema = new Schema({
   favoriteAuthor: {
     type: String
   },
-  prmopts: {
-    type: [{ type: Schema.Types.ObjectId, ref: 'prompts' }]
+  prompts: {
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'prompt' }]
   },
   stories: {
-    type: [{ type: Schema.Types.ObjectId, ref: 'stories' }]
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'story' }]
   }
 });
 

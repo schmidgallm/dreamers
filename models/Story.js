@@ -1,12 +1,10 @@
 // Dependencies
 const mongoose = require('mongoose');
 
-const { Schema } = mongoose;
-
-const StorySchema = new Schema({
+const StorySchema = new mongoose.Schema({
   user: {
-    type: Schema.Types.ObjectId,
-    ref: 'users'
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'user'
   },
   title: {
     type: String,
@@ -30,6 +28,6 @@ const StorySchema = new Schema({
   }
 });
 
-const Story = mongoose.model('stories', StorySchema);
+const Story = mongoose.model('story', StorySchema);
 
 module.exports = Story;

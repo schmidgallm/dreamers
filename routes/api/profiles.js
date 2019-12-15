@@ -1,19 +1,21 @@
 const express = require('express');
 const auth = require('../../middleware/auth');
 const Profile = require('../../models/Profile');
-const User = require('../../models/User');
 
 const router = express.Router();
 
 // @route   GET api/v1/profile/me
-// @desc    Get current users profile
+// @desc    Get logged in users profile
 // @access  PRIVATE
 router.get('/me', auth, async (req, res) => {
   try {
     // fine profile from user and populate with name from users collection
     const profile = await Profile.findOne({
       user: req.user.id
-    }).populate('stories', ['title', 'genre', 'upvotes', 'publishedDate']);
+    })
+      .populate('user', 'name')
+      .populate('stories', ['title', 'genre', 'publishedDate'])
+      .populate('prompts', ['title', 'genre', 'publishedDate']);
 
     // if not pofile of user exists
     if (!profile) {
@@ -75,6 +77,19 @@ router.post('/', auth, async (req, res) => {
     // save to db
     await profile.save();
     return res.status(200).json(profile);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+// @route   GET api/v1/profile
+// @desc    Get all profiles
+// @access  PUBLIC
+router.get('/', async (req, res) => {
+  try {
+    const profiles = await Profile.find({}).populate('users', 'name');
+    res.json(profiles);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');

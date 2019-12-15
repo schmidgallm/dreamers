@@ -1,12 +1,10 @@
 // Dependencies
 const mongoose = require('mongoose');
 
-const { Schema } = mongoose;
-
-const PromptSchema = new Schema({
+const PromptSchema = new mongoose.Schema({
   user: {
-    type: Schema.Types.ObjectId,
-    ref: 'users'
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'user'
   },
   title: {
     type: String,
@@ -30,6 +28,6 @@ const PromptSchema = new Schema({
   }
 });
 
-const Prompt = mongoose.model('prompts', PromptSchema);
+const Prompt = mongoose.model('prompt', PromptSchema);
 
 module.exports = Prompt;

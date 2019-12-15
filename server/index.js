@@ -29,7 +29,7 @@ connectDB();
 // init api routes
 app.use('/api/v1/users', userRoute);
 app.use('/api/v1/auth', authRoute);
-app.use('/api/v1/profile', profileRoute);
+app.use('/api/v1/profiles', profileRoute);
 app.use('/api/v1/story', storyRoute);
 app.use('/api/v1/prompt', promptRoute);
 

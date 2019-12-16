@@ -25,8 +25,8 @@ router.get('/users/:user_id', async (req, res) => {
   try {
     const profile = await Profile.find({ user: req.params.user_id })
       .populate('user', 'name')
-      .populate('stories', ['title', 'genre', 'publishedDate'])
-      .populate('prompts', ['title', 'genre', 'publishedDate']);
+      .populate('stories', ['title', 'likes', 'comments', 'publishedDate'])
+      .populate('prompts', ['title', 'likes', 'comments', 'publishedDate']);
 
     // if no profile
     if (!profile) {
@@ -56,8 +56,8 @@ router.get('/me', auth, async (req, res) => {
       user: req.user.id
     })
       .populate('user', 'name')
-      .populate('stories', ['title', 'genre', 'publishedDate'])
-      .populate('prompts', ['title', 'genre', 'publishedDate']);
+      .populate('stories', ['title', 'likes', 'comments', 'publishedDate'])
+      .populate('prompts', ['title', 'likes', 'comments', 'publishedDate']);
 
     // if not pofile of user exists
     if (!profile) {

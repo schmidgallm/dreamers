@@ -6,11 +6,21 @@ const PromptSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user'
   },
+  name: {
+    type: String
+  },
+  penName: {
+    type: String
+  },
   title: {
     type: String,
     required: true
   },
   genre: {
+    type: String,
+    required: true
+  },
+  content: {
     type: String,
     required: true
   },
@@ -31,6 +41,12 @@ const PromptSchema = new mongoose.Schema({
       text: {
         type: String
       },
+      name: {
+        type: String
+      },
+      penName: {
+        type: String
+      },
       date: {
         type: Date,
         default: Date.now
@@ -40,10 +56,6 @@ const PromptSchema = new mongoose.Schema({
   publishedDate: {
     type: Date,
     default: Date.now
-  },
-  content: {
-    type: String,
-    required: true
   }
 });
 

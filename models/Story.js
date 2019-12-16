@@ -6,6 +6,12 @@ const StorySchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user'
   },
+  name: {
+    type: String
+  },
+  penName: {
+    type: String
+  },
   title: {
     type: String,
     required: true
@@ -33,6 +39,12 @@ const StorySchema = new mongoose.Schema({
         ref: 'user'
       },
       text: {
+        type: String
+      },
+      name: {
+        type: String
+      },
+      penName: {
         type: String
       },
       date: {

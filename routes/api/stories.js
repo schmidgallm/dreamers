@@ -28,6 +28,7 @@ router.get('/mystories', auth, async (req, res) => {
     res.status(500).send('Server Error');
   }
 });
+
 // @route   POST api/v1/stories
 // @desc    CREATE story
 // @access  Public

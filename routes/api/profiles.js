@@ -1,10 +1,52 @@
 const express = require('express');
 const auth = require('../../middleware/auth');
 const Profile = require('../../models/Profile');
+const User = require('../../models/User');
 
 const router = express.Router();
 
-// @route   GET api/v1/profile/me
+// @route   GET api/v1/profiles
+// @desc    Get all profiles
+// @access  PUBLIC
+router.get('/', async (req, res) => {
+  try {
+    const profiles = await Profile.find({}).populate('user', 'name');
+    res.json(profiles);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+// @route   GET api/v1/profiles/users/:user_id
+// @desc    Get profile by user ID
+// @access  PUBLIC
+router.get('/users/:user_id', async (req, res) => {
+  try {
+    const profile = await Profile.find({ user: req.params.user_id })
+      .populate('user', 'name')
+      .populate('stories', ['title', 'genre', 'publishedDate'])
+      .populate('prompts', ['title', 'genre', 'publishedDate']);
+
+    // if no profile
+    if (!profile) {
+      return res.status(400).json({ msg: 'No profile yet...such sadness' });
+    }
+
+    // return profile
+    res.json(profile);
+  } catch (err) {
+    console.error(err.message);
+
+    // Avoid server error message from valid objectIds in request param
+    if (err.kind === 'ObjectId') {
+      return res.status(400).json({ msg: 'No profile yet...such sadness' });
+    }
+    res.status(500).send('Server Error');
+  }
+});
+
+// @route   GET api/v1/profiles/me
 // @desc    Get logged in users profile
 // @access  PRIVATE
 router.get('/me', auth, async (req, res) => {
@@ -83,13 +125,19 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
-// @route   GET api/v1/profile
-// @desc    Get all profiles
-// @access  PUBLIC
-router.get('/', async (req, res) => {
+// @route   DELETE api/v1/profiles
+// @desc    Delete prifle, user, stories, and prompts
+// @access  PRIVATE
+router.delete('/', auth, async (req, res) => {
   try {
-    const profiles = await Profile.find({}).populate('user', 'name');
-    res.json(profiles);
+    // TODO - remove users stories and prompts
+    //  remove profile
+    await Profile.findOneAndRemove({ user: req.user.id });
+
+    // remove user
+    await User.findOneAndRemove({ _id: req.user.id });
+
+    res.json({ msg: 'User deleted' });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');

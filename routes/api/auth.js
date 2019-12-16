@@ -5,13 +5,14 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { check, validationResult } = require('express-validator');
 const auth = require('../../middleware/auth');
+const User = require('../../models/User');
 
 const router = express.Router();
 dotenv.config();
 
-// import user model
-const User = require('../../models/User');
-
+// @route    GET api/v1/auth
+// @desc     Test route
+// @access   Public
 router.get('/', auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
@@ -22,7 +23,9 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
-// user creation post route
+// @route   POST api/v1/auth
+// @desc    Authenticate user and get token
+// @access  PUBLIC
 router.post(
   '/',
   // express validator checks

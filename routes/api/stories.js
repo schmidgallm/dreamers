@@ -101,7 +101,7 @@ router.put('/like/:id', auth, async (req, res) => {
   try {
     const story = await Story.findById(req.params.id);
 
-    // check if story has already been liked
+    // check if story has already been liked by user
     if (
       story.likes.filter(like => like.user.toString() === req.user.id).length >
       0

@@ -11,13 +11,13 @@ const mg = mailgun({
 
 module.exports = {
   // welcome email after registration
-  welcomEmail: email => {
+  welcomeEmail: email => {
     // init email headers and body
     const data = {
       from: 'schmidgallm.10@gmail.com',
       to: email,
       subject: 'Welcome',
-      text: 'Welcom to Dreamers!!'
+      text: 'Welcome to Dreamers!!'
     };
 
     // send email

@@ -9,18 +9,104 @@ const mg = mailgun({
   domain: process.env.MAILGUN_DOMAIN
 });
 
-// prepare email
-const data = {
-  from: 'schmidgallm.10@gmail.com',
-  to: 'schmidgallm.10@gmail.com',
-  subject: 'Hello',
-  text: 'Testing some Mailgun awesomness!'
+module.exports = {
+  // welcome email after registration
+  welcomEmail: email => {
+    // init email headers and body
+    const data = {
+      from: 'schmidgallm.10@gmail.com',
+      to: email,
+      subject: 'Welcome',
+      text: 'Welcom to Dreamers!!'
+    };
+
+    // send email
+    mg.messages().send(data, function(error, body) {
+      if (error) {
+        console.log(error);
+      }
+      console.log(body);
+    });
+  },
+
+  // notification email when user likes your story
+  storyLikeNotification: (email, user) => {
+    // init email headers and body
+    const data = {
+      from: 'schmidgallm.10@gmail.com',
+      to: email,
+      subject: 'Great Job!',
+      text: `${user} liked your story!`
+    };
+
+    // send email
+    mg.messages().send(data, function(error, body) {
+      if (error) {
+        console.log(error);
+      }
+      console.log(body);
+    });
+  },
+
+  // notification email when user comments your story
+  storyCommentNotification: (email, user) => {
+    // init email headers and body
+    const data = {
+      from: 'schmidgallm.10@gmail.com',
+      to: email,
+      subject: 'Great Job!',
+      text: `${user} commented your story!`
+    };
+
+    // send email
+    mg.messages().send(data, function(error, body) {
+      if (error) {
+        console.log(error);
+      }
+      console.log(body);
+    });
+  },
+
+  // notification email when user likes your prompt
+  promptLikeNotification: (email, user) => {
+    // init email headers and body
+    const data = {
+      from: 'schmidgallm.10@gmail.com',
+      to: email,
+      subject: 'Great Job!',
+      text: `${user} liked your prompt!`
+    };
+
+    // send email
+    mg.messages().send(data, function(error, body) {
+      if (error) {
+        console.log(error);
+      }
+      console.log(body);
+    });
+  },
+
+  // notification email when user comments on your prompt
+  promptCommentNotification: (email, user) => {
+    // init email headers and body
+    const data = {
+      from: 'schmidgallm.10@gmail.com',
+      to: email,
+      subject: 'Great Job!',
+      text: `${user} commented on your prompt!`
+    };
+
+    // send email
+    mg.messages().send(data, function(error, body) {
+      if (error) {
+        console.log(error);
+      }
+      console.log(body);
+    });
+  }
 };
 
-// send email
-mg.messages().send(data, function(error, body) {
-  if (error) {
-    console.log(error);
-  }
-  console.log(body);
-});
+// ----------
+// TODO
+// ----------
+// create email templates for each method

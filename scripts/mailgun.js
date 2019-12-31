@@ -30,13 +30,13 @@ module.exports = {
   },
 
   // notification email when user likes your story
-  storyLikeNotification: (email, user) => {
+  storyLikeNotification: (email, story) => {
     // init email headers and body
     const data = {
       from: 'schmidgallm.10@gmail.com',
       to: email,
       subject: 'Great Job!',
-      text: `${user} liked your story!`
+      text: `${story} is getting likes!!`
     };
 
     // send email

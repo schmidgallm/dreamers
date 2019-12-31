@@ -4,6 +4,7 @@ const auth = require('../../middleware/auth');
 const Story = require('../../models/Story');
 const User = require('../../models/User');
 const Profile = require('../../models/Profile');
+const { storyLikeNotification } = require('../../scripts/mailgun');
 
 const router = express.Router();
 
@@ -114,6 +115,12 @@ router.put('/like/:id', auth, async (req, res) => {
 
     // update db
     await story.save();
+
+    // Send email notification of story liked when over 10 times
+    const user = await User.findById(story.user);
+    if (story.likes.length >= 10) {
+      storyLikeNotification(user.email, story.title);
+    }
 
     res.json(story.likes);
   } catch (err) {

@@ -4,6 +4,7 @@ const auth = require('../../middleware/auth');
 const Story = require('../../models/Story');
 const User = require('../../models/User');
 const Profile = require('../../models/Profile');
+const { storyLikeNotification } = require('../../scripts/mailgun');
 
 const router = express.Router();
 
@@ -101,7 +102,7 @@ router.put('/like/:id', auth, async (req, res) => {
   try {
     const story = await Story.findById(req.params.id);
 
-    // check if story has already been liked
+    // check if story has already been liked by user
     if (
       story.likes.filter(like => like.user.toString() === req.user.id).length >
       0
@@ -114,6 +115,12 @@ router.put('/like/:id', auth, async (req, res) => {
 
     // update db
     await story.save();
+
+    // Send email notification of story liked when over 10 times
+    const user = await User.findById(story.user);
+    if (story.likes.length >= 10) {
+      storyLikeNotification(user.email, story.title);
+    }
 
     res.json(story.likes);
   } catch (err) {
@@ -298,6 +305,28 @@ router.delete('/comment/:id/:comment_id', auth, async (req, res) => {
     // update db and return response
     await story.save();
     res.json(story.comments);
+  } catch (err) {
+    console.error(err.message);
+    return res.status(500).send('Server Error');
+  }
+});
+
+// @route   GET api/v1/story/trending
+// @desc    Get stories by most likes
+// @access  Private
+router.get('/trending/all', auth, async (req, res) => {
+  try {
+    // sort stories by greatest likes length and limit to 20
+    const stories = await Story.find({})
+      .sort({ 'likes.length': -1 })
+      .limit(20);
+
+    // if not stories then they are not paid user
+    if (!stories) {
+      return res.status(400).json({ msg: 'Upgrade now to see stories' });
+    }
+
+    return res.status(200).json(stories);
   } catch (err) {
     console.error(err.message);
     return res.status(500).send('Server Error');

@@ -4,11 +4,14 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { check, validationResult } = require('express-validator');
+const { welcomeEmail } = require('../../scripts/mailgun');
 
 dotenv.config();
 const router = express.Router();
 
-// import user model
+// @route   POST api/v1/user
+// @desc    Create a user
+// @access  PUBLIC
 const User = require('../../models/User');
 
 // user creation post route
@@ -56,6 +59,9 @@ router.post(
 
       // save new user to db
       await user.save();
+
+      // send welcome email
+      welcomeEmail(email);
 
       // init jwt payload with user id
       const payload = {

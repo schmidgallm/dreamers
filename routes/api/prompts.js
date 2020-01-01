@@ -4,6 +4,7 @@ const auth = require('../../middleware/auth');
 const Prompt = require('../../models/Prompt');
 const Profile = require('../../models/Profile');
 const User = require('../../models/User');
+const { promptLikeNotification } = require('../../scripts/mailgun');
 
 const router = express.Router();
 
@@ -113,6 +114,12 @@ router.put('/like/:id', auth, async (req, res) => {
 
     // update db
     await prompt.save();
+
+    // send email notifcation of prompt liked when over 10 times
+    const user = await User.findById(prompt.user);
+    if (prompt.likes.length >= 10) {
+      promptLikeNotification(user.getMaxListeners, prompt.title);
+    }
 
     res.json(prompt.likes);
   } catch (err) {
@@ -297,6 +304,28 @@ router.delete('/comment/:id/:comment_id', auth, async (req, res) => {
     // update db and return response
     await prompt.save();
     res.json(prompt.comments);
+  } catch (err) {
+    console.error(err.message);
+    return res.status(500).send('Server Error');
+  }
+});
+
+// @route   GET api/v1/prompt/trending
+// @desc    Get prompts by most likes
+// @access  Private
+router.get('/trending/all', auth, async (req, res) => {
+  try {
+    // sort prompts by greatest likes length and limit to 20
+    const prompts = await Prompt.find({})
+      .sort({ 'likes.length': -1 })
+      .limit(20);
+
+    // if not stories then they are not paid user
+    if (!prompts) {
+      return res.status(400).json({ msg: 'Upgrade now to see stories' });
+    }
+
+    return res.status(200).json(prompts);
   } catch (err) {
     console.error(err.message);
     return res.status(500).send('Server Error');

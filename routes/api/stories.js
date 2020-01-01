@@ -311,4 +311,26 @@ router.delete('/comment/:id/:comment_id', auth, async (req, res) => {
   }
 });
 
+// @route   GET api/v1/story/trending
+// @desc    Get stories by most likes
+// @access  Private
+router.get('/trending/all', auth, async (req, res) => {
+  try {
+    // sort stories by greatest likes length and limit to 20
+    const stories = await Story.find({})
+      .sort({ 'likes.length': -1 })
+      .limit(20);
+
+    // if not stories then they are not paid user
+    if (!stories) {
+      return res.status(400).json({ msg: 'Upgrade now to see stories' });
+    }
+
+    return res.status(200).json(stories);
+  } catch (err) {
+    console.error(err.message);
+    return res.status(500).send('Server Error');
+  }
+});
+
 module.exports = router;

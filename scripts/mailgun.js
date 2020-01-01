@@ -68,13 +68,13 @@ module.exports = {
   },
 
   // notification email when user likes your prompt
-  promptLikeNotification: (email, user) => {
+  promptLikeNotification: (email, prompt) => {
     // init email headers and body
     const data = {
       from: 'schmidgallm.10@gmail.com',
       to: email,
       subject: 'Great Job!',
-      text: `${user} liked your prompt!`
+      text: `${prompt} is gettign likes!`
     };
 
     // send email

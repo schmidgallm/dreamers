@@ -4,6 +4,7 @@ const auth = require('../../middleware/auth');
 const Prompt = require('../../models/Prompt');
 const Profile = require('../../models/Profile');
 const User = require('../../models/User');
+const { promptLikeNotification } = require('../../scripts/mailgun');
 
 const router = express.Router();
 
@@ -113,6 +114,12 @@ router.put('/like/:id', auth, async (req, res) => {
 
     // update db
     await prompt.save();
+
+    // send email notifcation of prompt liked when over 10 times
+    const user = await User.findById(prompt.user);
+    if (prompt.likes.length >= 10) {
+      promptLikeNotification(user.getMaxListeners, prompt.title);
+    }
 
     res.json(prompt.likes);
   } catch (err) {

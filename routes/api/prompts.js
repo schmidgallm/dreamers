@@ -315,7 +315,7 @@ router.delete('/comment/:id/:comment_id', auth, async (req, res) => {
 // @access  Private
 router.get('/trending/all', auth, async (req, res) => {
   try {
-    // sort stories by greatest likes length and limit to 20
+    // sort prompts by greatest likes length and limit to 20
     const prompts = await Prompt.find({})
       .sort({ 'likes.length': -1 })
       .limit(20);

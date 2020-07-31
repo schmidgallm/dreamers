@@ -33,17 +33,6 @@ app.use('/api/v1/profiles', profileRoute);
 app.use('/api/v1/story', storyRoute);
 app.use('/api/v1/prompt', promptRoute);
 
-// Init static assets if deployed
-if (process.env.NODE_ENV === 'production') {
-  // init static folder
-  app.use(express.static(path.join(__dirname, 'client/build')));
-}
-
-// handle all other requests
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
-});
-
 // init server
 app.listen(PORT, () => {
   console.log(`> Server now listening on port ${PORT}`);

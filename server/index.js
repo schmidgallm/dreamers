@@ -9,12 +9,12 @@ const profileRoute = require('../routes/api/profiles');
 const storyRoute = require('../routes/api/stories');
 const promptRoute = require('../routes/api/prompts');
 
-// cors middleware
-app.use(cors());
-
 // init app
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// cors middleware
+app.use(cors());
 
 // Use morgan to log all requests
 app.use(logger('dev'));

@@ -21,30 +21,8 @@ router.get('/', async (req, res) => {
   }
 });
 
-// @route   GET api/v1/prompt/myprompts
-// @desc    GET logged in users prompts
-// @access  Public
-router.get('/myprompts', auth, async (req, res) => {
-  try {
-    const profile = await Profile.findOne({
-      user: req.user.id
-    }).populate('prompts', ['title', 'likes']);
-
-    // if no profile of user exists
-    if (!profile) {
-      return res.status(400).json({ msg: 'No prompts created yet.' });
-    }
-
-    // return profile
-    return res.json(profile);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
-  }
-});
-
 // @route   GET api/v1/prompt/:id
-// @desc    Get logged in users prompts by id
+// @desc    Get prompt by id
 // @access  PRIVATE
 router.get('/:id', auth, async (req, res) => {
   try {
@@ -60,6 +38,28 @@ router.get('/:id', auth, async (req, res) => {
     if (err.kind === 'ObjectId') {
       return res.status(404).json({ msg: 'Story not found' });
     }
+    res.status(500).send('Server Error');
+  }
+});
+
+// @route   GET api/v1/prompt/myprompts
+// @desc    GET logged in users prompts
+// @access  Public
+router.get('/me/prompts', auth, async (req, res) => {
+  try {
+    const profile = await Profile.findOne({
+      user: req.user.id
+    }).populate('prompts', ['title', 'likes']);
+
+    // if no profile of user exists
+    if (!profile) {
+      return res.status(400).json({ msg: 'No prompts created yet.' });
+    }
+
+    // return profile
+    return res.json(profile);
+  } catch (err) {
+    console.error(err.message);
     res.status(500).send('Server Error');
   }
 });

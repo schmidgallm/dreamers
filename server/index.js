@@ -1,38 +1,14 @@
-// dependencies
-const express = require('express');
-const logger = require('morgan');
-const cors = require('cors');
-const connectDB = require('../db/index.js');
-const userRoute = require('../routes/api/users');
-const authRoute = require('../routes/api/auth');
-const profileRoute = require('../routes/api/profiles');
-const storyRoute = require('../routes/api/stories');
-const promptRoute = require('../routes/api/prompts');
+// Dependencies
+const http = require('http');
+const app = require('../app');
+const connectDB = require('../db/index');
 
-// init app
-const app = express();
-const PORT = process.env.PORT || 5000;
-
-// cors middleware
-app.use(cors());
-
-// Use morgan to log all requests
-app.use(logger('dev'));
-
-// Body Parser Middleware
-app.use(express.json({ extended: true }));
-
-// Init database connection
+// Init DB connection
 connectDB();
 
-// init api routes
-app.use('/api/v1/users', userRoute);
-app.use('/api/v1/auth', authRoute);
-app.use('/api/v1/profiles', profileRoute);
-app.use('/api/v1/story', storyRoute);
-app.use('/api/v1/prompt', promptRoute);
-
-// init server
-app.listen(PORT, () => {
+// Init Port and create server and add listener for server start
+const PORT = process.env.PORT || 5000;
+const server = http.createServer(app);
+server.listen(PORT, () => {
   console.log(`> Server now listening on port ${PORT}`);
 });

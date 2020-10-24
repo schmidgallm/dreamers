@@ -8,7 +8,7 @@ const { promptLikeNotification } = require('../../scripts/mailgun');
 
 const router = express.Router();
 
-// @route   GET api/v1/prompt
+// @route   GET api/v1/prompts
 // @desc    Get all prompts
 // @access  PUBLIC
 router.get('/', async (req, res) => {

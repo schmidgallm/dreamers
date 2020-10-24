@@ -11,7 +11,7 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   try {
     const profiles = await Profile.find({}).populate('user', 'name');
-    res.json(profiles);
+    return res.json(profiles);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
@@ -24,7 +24,7 @@ router.get('/', async (req, res) => {
 router.get('/users/:user_id', async (req, res) => {
   try {
     const profile = await Profile.find({ user: req.params.user_id })
-      .populate('user', 'name')
+      .populate('user', ['name', 'date'])
       .populate('stories', ['title', 'likes', 'comments', 'publishedDate'])
       .populate('prompts', ['title', 'likes', 'comments', 'publishedDate']);
 
@@ -34,7 +34,7 @@ router.get('/users/:user_id', async (req, res) => {
     }
 
     // return profile
-    res.json(profile);
+    return res.json(profile);
   } catch (err) {
     console.error(err.message);
 
@@ -65,7 +65,7 @@ router.get('/me', auth, async (req, res) => {
     }
 
     // return profile
-    res.json(profile);
+    return res.json(profile);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
@@ -137,7 +137,7 @@ router.delete('/', auth, async (req, res) => {
     // remove user
     await User.findOneAndRemove({ _id: req.user.id });
 
-    res.json({ msg: 'User deleted' });
+    return res.json({ msg: 'User deleted' });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');

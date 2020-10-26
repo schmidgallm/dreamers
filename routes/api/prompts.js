@@ -30,13 +30,13 @@ router.get('/:id', auth, async (req, res) => {
 
     // if no story with request id
     if (!prompt) {
-      return res.status(404).json({ msg: 'Story not found' });
+      return res.status(404).json({ msg: 'Prompt not found' });
     }
-    res.json(prompt);
+    return res.json(prompt);
   } catch (err) {
     console.error(err.message);
     if (err.kind === 'ObjectId') {
-      return res.status(404).json({ msg: 'Story not found' });
+      return res.status(404).json({ msg: 'Prompt not found' });
     }
     res.status(500).send('Server Error');
   }

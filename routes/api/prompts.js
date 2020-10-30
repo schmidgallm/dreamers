@@ -94,7 +94,7 @@ router.delete('/:id', auth, async (req, res) => {
   }
 });
 
-// @route   PUT api/v1/promipt/like/:id
+// @route   PUT api/v1/prompt/like/:id
 // @desc    Like a prompt
 // @access  PRIVATE
 router.put('/like/:id', auth, async (req, res) => {
@@ -117,8 +117,8 @@ router.put('/like/:id', auth, async (req, res) => {
 
     // send email notifcation of prompt liked when over 10 times
     const user = await User.findById(prompt.user);
-    if (prompt.likes.length >= 10) {
-      promptLikeNotification(user.getMaxListeners, prompt.title);
+    if (prompt.likes.length === 10) {
+      promptLikeNotification(user.email, prompt.title);
     }
 
     res.json(prompt.likes);
@@ -250,14 +250,21 @@ router.post(
       }
 
       // destructure request body
-      const { name, penName, text } = req.body;
+      const { text } = req.body;
+
+      // hold this mayne need it
+      // const { name, penName, text } = req.body;
 
       // init new instance of story
       const newComment = {};
       newComment.user = req.user.id;
       newComment.text = text;
-      if (name) newComment.name = user.name;
-      if (penName) newComment.penName = profile.penName;
+      newComment.name = user.name;
+      newComment.penName = profile.penName;
+
+      // hold on this mayne need it
+      // if (name) newComment.name = user.name;
+      // if (penName) newComment.penName = profile.penName;
 
       // unshift new comment and update db
       await prompt.comments.unshift(newComment);

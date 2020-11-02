@@ -50,7 +50,15 @@ const PromptSchema = new mongoose.Schema({
       date: {
         type: Date,
         default: Date.now
-      }
+      },
+      likes: [
+        {
+          user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'user'
+          }
+        }
+      ]
     }
   ],
   publishedDate: {

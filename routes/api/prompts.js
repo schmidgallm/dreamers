@@ -220,7 +220,7 @@ router.post(
   }
 );
 
-// @route   POST api/v1/promipt/comment/:id
+// @route   POST api/v1/prompts/comment/:id
 // @desc    CREATE a comment on a prompt
 // @access  Private
 router.post(
@@ -278,7 +278,7 @@ router.post(
   }
 );
 
-// @route   DELETE api/v1/story/comment/:id/:comment_id
+// @route   DELETE api/v1/prompts/comment/:id/:comment_id
 // @desc    Delete comment
 // @access  Private
 router.delete('/comment/:id/:comment_id', auth, async (req, res) => {
@@ -310,7 +310,7 @@ router.delete('/comment/:id/:comment_id', auth, async (req, res) => {
 
     // update db and return response
     await prompt.save();
-    res.json(prompt.comments);
+    return res.json(prompt.comments);
   } catch (err) {
     console.error(err.message);
     return res.status(500).send('Server Error');

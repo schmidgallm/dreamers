@@ -1,11 +1,31 @@
+// Dependencies
 const express = require('express');
 const { check, validationResult } = require('express-validator');
+const multer = require('multer');
+const dotenv = require('dotenv');
 const auth = require('../../middleware/auth');
+const { storyLikeNotification } = require('../../scripts/mailgun');
+const uploadFileToS3 = require('../../upload/index');
 const Story = require('../../models/Story');
 const User = require('../../models/User');
 const Profile = require('../../models/Profile');
-const { storyLikeNotification } = require('../../scripts/mailgun');
 
+// Init enviormental variables
+dotenv.config();
+
+// init multer storage engine
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'upload/files/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.originalname);
+  },
+});
+
+const upload = multer({ storage });
+
+// Init Express router
 const router = express.Router();
 
 // @route   GET api/v1/story
@@ -27,7 +47,7 @@ router.get('/', async (req, res) => {
 router.get('/mystories', auth, async (req, res) => {
   try {
     const profile = await Profile.findOne({
-      user: req.user.id
+      user: req.user.id,
     }).populate('stories', ['title', 'likes']);
 
     // if no profile of user exists
@@ -104,8 +124,8 @@ router.put('/like/:id', auth, async (req, res) => {
 
     // check if story has already been liked by user
     if (
-      story.likes.filter(like => like.user.toString() === req.user.id).length >
-      0
+      story.likes.filter(like => like.user.toString() === req.user.id)
+        .length > 0
     ) {
       return res.status(400).json({ msg: 'Story already liked' });
     }
@@ -141,7 +161,9 @@ router.put('/unlike/:id', auth, async (req, res) => {
       story.likes.filter(like => like.user.toString() === req.user.id)
         .length === 0
     ) {
-      return res.status(400).json({ msg: 'Story has not yet been liked' });
+      return res
+        .status(400)
+        .json({ msg: 'Story has not yet been liked' });
     }
 
     // get remove index
@@ -163,63 +185,11 @@ router.put('/unlike/:id', auth, async (req, res) => {
 });
 
 // @route   POST api/v1/story
-// @desc    CREATE story
+// @desc    CREATE story and save doc to S3 Bucket
 // @access  Public
-router.post(
-  '/',
-  [
-    auth,
-    check('title', 'Title is required')
-      .not()
-      .isEmpty(),
-    check('genre', 'Genre is required')
-      .not()
-      .isEmpty(),
-    check('content', 'Content is required')
-      .not()
-      .isEmpty()
-  ],
-  async (req, res) => {
-    // if errors from validation exists
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-    try {
-      const user = await User.findById(req.user.id).select('-password');
-      const profile = await Profile.findOne({ user: req.user.id });
-
-      // if no profile
-      if (!profile) {
-        return res.status(400).json({
-          msg: 'Must first create a profile before submitting stories'
-        });
-      }
-
-      // destructure request body
-      const { title, genre, content } = req.body;
-
-      // init new instance of story
-      const newStory = {};
-      newStory.user = req.user.id;
-      newStory.title = title;
-      newStory.genre = genre;
-      newStory.content = content;
-      if (profile.penName) newStory.penName = profile.penName;
-      if (!profile.penName) newStory.name = user.name;
-
-      // save story to db and push story.id to profile
-      const story = new Story(newStory);
-      await story.save();
-      await profile.update({ $push: { stories: story.id } });
-
-      return res.status(200).json(story);
-    } catch (err) {
-      console.warn(err.message);
-      res.status(500).send('Server Error');
-    }
-  }
-);
+router.post('/', auth, upload.single('story'), async (req, res) => {
+  uploadFileToS3(req, res);
+});
 
 // @route   POST api/v1/story/comment/:id
 // @desc    CREATE a comment on story
@@ -230,7 +200,7 @@ router.post(
     auth,
     check('text', 'Text is required')
       .not()
-      .isEmpty()
+      .isEmpty(),
   ],
   async (req, res) => {
     // if errors from validation exists
@@ -239,14 +209,17 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
     try {
-      const user = await User.findById(req.user.id).select('-password');
+      const user = await User.findById(req.user.id).select(
+        '-password',
+      );
       const story = await Story.findById(req.params.id);
       const profile = await Profile.findOne({ user: req.user.id });
 
       // if no profile
       if (!profile) {
         return res.status(400).json({
-          msg: 'Must first create a profile before submitting stories'
+          msg:
+            'Must first create a profile before submitting stories',
         });
       }
 
@@ -269,7 +242,7 @@ router.post(
       console.warn(err.message);
       res.status(500).send('Server Error');
     }
-  }
+  },
 );
 
 // @route   DELETE api/v1/story/comment/:id/:comment_id
@@ -281,7 +254,7 @@ router.delete('/comment/:id/:comment_id', auth, async (req, res) => {
 
     // Get comment
     const comment = story.comments.find(
-      com => com.id === req.params.comment_id
+      com => com.id === req.params.comment_id,
     );
 
     // Check if comment exists
@@ -323,7 +296,9 @@ router.get('/trending/all', auth, async (req, res) => {
 
     // if not stories then they are not paid user
     if (!stories) {
-      return res.status(400).json({ msg: 'Upgrade now to see stories' });
+      return res
+        .status(400)
+        .json({ msg: 'Upgrade now to see stories' });
     }
 
     return res.status(200).json(stories);

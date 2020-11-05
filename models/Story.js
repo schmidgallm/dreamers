@@ -4,59 +4,71 @@ const mongoose = require('mongoose');
 const StorySchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'user'
+    ref: 'user',
   },
   name: {
-    type: String
+    type: String,
   },
   penName: {
-    type: String
+    type: String,
   },
   title: {
     type: String,
-    required: true
+    required: true,
   },
   genre: {
     type: String,
-    required: true
+    required: true,
   },
-  content: {
+  mimetype: {
     type: String,
-    required: true
+    required: true,
+  },
+  ETag: {
+    type: String,
+    required: true,
+  },
+  location: {
+    type: String,
+    required: true,
+  },
+  key: {
+    type: String,
+    required: true,
   },
   likes: [
     {
       user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'user'
-      }
-    }
+        ref: 'user',
+      },
+    },
   ],
   comments: [
     {
       user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'user'
+        ref: 'user',
       },
       text: {
-        type: String
+        type: String,
       },
       name: {
-        type: String
+        type: String,
       },
       penName: {
-        type: String
+        type: String,
       },
       date: {
         type: Date,
-        default: Date.now
-      }
-    }
+        default: Date.now,
+      },
+    },
   ],
   publishedDate: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 
 const Story = mongoose.model('story', StorySchema);

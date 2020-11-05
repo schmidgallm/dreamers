@@ -4,31 +4,31 @@ const mongoose = require('mongoose');
 const ProfileSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'user'
+    ref: 'user',
   },
   penName: {
     type: String,
-    trim: true
+    trim: true,
   },
   rating: {
     type: Number,
-    default: 0
+    default: 0,
   },
   bio: {
-    type: String
+    type: String,
   },
   favoriteBook: {
-    type: String
+    type: String,
   },
   favoriteAuthor: {
-    type: String
+    type: String,
   },
   prompts: {
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'prompt' }]
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'prompt' }],
   },
   stories: {
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'story' }]
-  }
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'story' }],
+  },
 });
 
 const Profile = mongoose.model('profiles', ProfileSchema);

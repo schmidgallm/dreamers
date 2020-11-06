@@ -20,6 +20,10 @@ const StorySchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  synopsis: {
+    type: String,
+    required: true,
+  },
   mimetype: {
     type: String,
     required: true,

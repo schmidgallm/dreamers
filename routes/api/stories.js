@@ -149,7 +149,7 @@ router.put('/like/:id', auth, async (req, res) => {
   }
 });
 
-// @route   PUT api/v1/story/unlike/:id
+// @route   PUT api/v1/stories/unlike/:id
 // @desc    Unlike a story
 // @access  PRIVATE
 router.put('/unlike/:id', auth, async (req, res) => {
@@ -184,14 +184,14 @@ router.put('/unlike/:id', auth, async (req, res) => {
   }
 });
 
-// @route   POST api/v1/story
+// @route   POST api/v1/stories
 // @desc    CREATE story and save doc to S3 Bucket
 // @access  Public
 router.post('/', auth, upload.single('story'), async (req, res) => {
   uploadFileToS3(req, res);
 });
 
-// @route   POST api/v1/story/comment/:id
+// @route   POST api/v1/stories/comment/:id
 // @desc    CREATE a comment on story
 // @access  Private
 router.post(

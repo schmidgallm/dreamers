@@ -13,7 +13,6 @@ dotenv.config();
 
 // Upload to AWS S3 and save instances to DB
 const uploadFileToS3 = async (req, res) => {
-  console.log(req.file);
   // Init AWS s3 Interface
   AWS.config.setPromisesDependency();
   AWS.config.update({
@@ -62,6 +61,7 @@ const uploadFileToS3 = async (req, res) => {
         const newStory = {};
         newStory.user = req.user.id;
         newStory.title = req.body.title;
+        newStory.synopsis = req.body.synopsis;
         newStory.genre = req.body.genre;
         newStory.penName = profile.penName;
         newStory.name = user.name;

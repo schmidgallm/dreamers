@@ -52,7 +52,7 @@ const uploadImageToCloudinary = async (req, res) => {
         }
 
         if (result) {
-          // init new instance of space inside db
+          // init new instance of space object
           const newSpace = {};
           newSpace.user = req.user.id;
           newSpace.name = user.name;
@@ -68,7 +68,7 @@ const uploadImageToCloudinary = async (req, res) => {
           newSpace.height = result.height;
           newSpace.format = result.format;
           newSpace.resourceType = result.resource_type;
-          newSpace.bytes = result.tags;
+          newSpace.bytes = result.bytes;
           newSpace.type = result.type;
           newSpace.etag = result.etag;
           newSpace.placeholder = result.placeholder;
@@ -76,8 +76,12 @@ const uploadImageToCloudinary = async (req, res) => {
           newSpace.secureUrl = result.secure_url;
           newSpace.accessMode = result.access_mode;
           newSpace.overwritten = result.overwritten;
-          newSpace.orginalfileName = result.original_filename;
-          newSpace.publicId = result.publicId;
+          newSpace.originalFilename = result.original_filename;
+
+          // save space to db and push space.id to profile
+          const space = new Spaces(newSpace);
+          space.save();
+          profile.update({ $push: { spaces: space.id } });
 
           // unlink doc from upload/file folder
           fs.unlinkSync(req.file.path);

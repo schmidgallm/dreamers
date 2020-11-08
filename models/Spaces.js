@@ -18,7 +18,6 @@ const SpacesSchema = new mongoose.Schema({
   },
   content: {
     type: String,
-    required: true,
   },
   assetId: {
     type: String,
@@ -89,7 +88,7 @@ const SpacesSchema = new mongoose.Schema({
     default: false,
     required: true,
   },
-  originalFileName: {
+  originalFilename: {
     type: String,
     required: true,
   },

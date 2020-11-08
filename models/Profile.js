@@ -29,6 +29,9 @@ const ProfileSchema = new mongoose.Schema({
   stories: {
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'story' }],
   },
+  spaces: {
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'spaces' }],
+  },
 });
 
 const Profile = mongoose.model('profiles', ProfileSchema);

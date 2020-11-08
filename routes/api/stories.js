@@ -5,7 +5,7 @@ const multer = require('multer');
 const dotenv = require('dotenv');
 const auth = require('../../middleware/auth');
 const { storyLikeNotification } = require('../../scripts/mailgun');
-const uploadFileToS3 = require('../../upload/index');
+const uploadFileToS3 = require('../../controllers/stories');
 const Story = require('../../models/Story');
 const User = require('../../models/User');
 const Profile = require('../../models/Profile');
@@ -28,7 +28,7 @@ const upload = multer({ storage });
 // Init Express router
 const router = express.Router();
 
-// @route   GET api/v1/story
+// @route   GET api/v1/stories
 // @desc    Get all stories
 // @access  PUBLIC
 router.get('/', async (req, res) => {

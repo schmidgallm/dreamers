@@ -43,54 +43,49 @@ const uploadImageToCloudinary = async (req, res) => {
       unique_filename: false,
     };
 
-    cloudinary.uploader.upload(
+    const upload = await cloudinary.uploader.upload(
       directory + file,
       options,
-      (err, result) => {
-        if (err) {
-          return res.status(400).json({ msg: err });
-        }
-
-        if (result) {
-          // init new instance of space object
-          const newSpace = {};
-          newSpace.user = req.user.id;
-          newSpace.name = user.name;
-          newSpace.penName = profile.penName;
-          newSpace.title = req.body.title;
-          newSpace.content = req.body.content;
-          newSpace.assetId = result.asset_id;
-          newSpace.publicId = result.public_id;
-          newSpace.version = result.version;
-          newSpace.versionId = result.version_id;
-          newSpace.signature = result.signature;
-          newSpace.width = result.width;
-          newSpace.height = result.height;
-          newSpace.format = result.format;
-          newSpace.resourceType = result.resource_type;
-          newSpace.bytes = result.bytes;
-          newSpace.type = result.type;
-          newSpace.etag = result.etag;
-          newSpace.placeholder = result.placeholder;
-          newSpace.url = result.url;
-          newSpace.secureUrl = result.secure_url;
-          newSpace.accessMode = result.access_mode;
-          newSpace.overwritten = result.overwritten;
-          newSpace.originalFilename = result.original_filename;
-
-          // save space to db and push space.id to profile
-          const space = new Spaces(newSpace);
-          space.save();
-          profile.update({ $push: { spaces: space.id } });
-
-          // unlink doc from upload/file folder
-          fs.unlinkSync(req.file.path);
-
-          // return response once all done
-          return res.status(200).json(result);
-        }
-      },
     );
+
+    // init new instance of space object
+    const newSpace = {};
+    newSpace.user = req.user.id;
+    newSpace.name = user.name;
+    newSpace.penName = profile.penName;
+    newSpace.title = req.body.title;
+    newSpace.content = req.body.content;
+    newSpace.assetId = upload.asset_id;
+    newSpace.publicId = upload.public_id;
+    newSpace.version = upload.version;
+    newSpace.versionId = upload.version_id;
+    newSpace.signature = upload.signature;
+    newSpace.width = upload.width;
+    newSpace.height = upload.height;
+    newSpace.format = upload.format;
+    newSpace.resourceType = upload.resource_type;
+    newSpace.bytes = upload.bytes;
+    newSpace.type = upload.type;
+    newSpace.etag = upload.etag;
+    newSpace.placeholder = upload.placeholder;
+    newSpace.url = upload.url;
+    newSpace.secureUrl = upload.secure_url;
+    newSpace.accessMode = upload.access_mode;
+    newSpace.overwritten = upload.overwritten;
+    newSpace.originalFilename = upload.original_filename;
+
+    // save space to db and push space.id to profile
+    const space = new Spaces(newSpace);
+    await space.save();
+    await profile.update({ $push: { spaces: space.id } });
+
+    // unlink doc from upload/file folder
+    fs.unlinkSync(req.file.path);
+
+    // return response with space object
+    return res.status(200).json(space);
+
+    // return response once all done
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');

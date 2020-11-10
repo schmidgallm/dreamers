@@ -49,38 +49,32 @@ const uploadFileToS3 = async (req, res) => {
       Key: `${req.user.id}_${req.file.originalname}`, // File name you want to save as in S3
     };
 
-    // Uploading files to the bucket
-    s3.upload(params, (err, data) => {
-      if (err) {
-        return res.status(400).json({ msg: err });
-      }
+    // init new story object to be stored in db
+    const storyObj = {};
+    storyObj.user = req.user.id;
+    storyObj.title = req.body.title;
+    storyObj.synopsis = req.body.synopsis;
+    storyObj.genre = req.body.genre;
+    storyObj.penName = profile.penName;
+    storyObj.name = user.name;
+    storyObj.mimetype = req.file.mimetype;
 
-      if (data) {
-        // init new instance of story
-        console.log(data);
-        const newStory = {};
-        newStory.user = req.user.id;
-        newStory.title = req.body.title;
-        newStory.synopsis = req.body.synopsis;
-        newStory.genre = req.body.genre;
-        newStory.penName = profile.penName;
-        newStory.name = user.name;
-        newStory.mimetype = req.file.mimetype;
-        newStory.ETag = data.ETag;
-        newStory.location = data.Location;
-        newStory.key = data.Key;
+    // Uploading files to the bucket and add values to story obj
+    const upload = await s3.upload(params).promise();
+    storyObj.ETag = upload.ETag;
+    storyObj.location = upload.Location;
+    storyObj.key = upload.Key;
 
-        // save story to db and push story.id to profile
-        const story = new Story(newStory);
-        story.save();
-        profile.update({ $push: { stories: story.id } });
+    // save story to db and update story id to profile
+    const story = new Story(storyObj);
+    await story.save();
+    await profile.updateOne({ $push: { stories: story._id } });
 
-        // unlink doc from upload/file folder
-        fs.unlinkSync(req.file.path);
+    // remove file from temp upload folder
+    fs.unlinkSync(req.file.path);
 
-        return res.status(200).json(story);
-      }
-    });
+    // return response
+    return res.status(200).json(story);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');

@@ -10,6 +10,7 @@ const profileRoute = require('../routes/api/profiles');
 const storyRoute = require('../routes/api/stories');
 const promptRoute = require('../routes/api/prompts');
 const spaceRoute = require('../routes/api/spaces');
+const communityRoute = require('../routes/api/community');
 
 // init app
 const app = express();
@@ -30,6 +31,7 @@ app.use('/api/v1/profiles', profileRoute);
 app.use('/api/v1/stories', storyRoute);
 app.use('/api/v1/prompts', promptRoute);
 app.use('/api/v1/spaces', spaceRoute);
+app.use('/api/v1/community', communityRoute);
 
 // Export app to for server to use
 module.exports = app;

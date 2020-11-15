@@ -1,16 +1,20 @@
 // Dependencies
 const mongoose = require('mongoose');
 
-const CommentSchema = new mongoose.Schema({
+const PostSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
   },
   penName: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'profile',
+    type: String,
+    required: true,
   },
-  postId: {
+  title: {
+    type: String,
+    required: true,
+  },
+  subThread: {
     type: String,
     required: true,
   },
@@ -27,7 +31,12 @@ const CommentSchema = new mongoose.Schema({
     },
   ],
   comments: [
-    { type: mongoose.Schema.Types.ObjectId, ref: 'comment' },
+    {
+      user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+      },
+    },
   ],
   publishedDate: {
     type: Date,
@@ -35,6 +44,6 @@ const CommentSchema = new mongoose.Schema({
   },
 });
 
-const Comment = mongoose.model('comment', CommentSchema);
+const Post = mongoose.model('post', PostSchema);
 
-module.exports = Comment;
+module.exports = Post;

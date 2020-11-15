@@ -224,14 +224,14 @@ router.post(
       }
 
       // destructure request body
-      const { name, penName, text } = req.body;
+      const { text } = req.body;
 
       // init new instance of story
       const newComment = {};
       newComment.user = req.user.id;
       newComment.text = text;
-      if (name) newComment.name = user.name;
-      if (penName) newComment.penName = profile.penName;
+      newComment.name = user.name;
+      newComment.penName = profile.penName;
 
       // unshift new comment and update db
       await story.comments.unshift(newComment);

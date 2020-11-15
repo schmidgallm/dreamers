@@ -32,6 +32,9 @@ const ProfileSchema = new mongoose.Schema({
   spaces: {
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'spaces' }],
   },
+  posts: {
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'post' }],
+  },
 });
 
 const Profile = mongoose.model('profiles', ProfileSchema);

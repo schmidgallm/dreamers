@@ -101,7 +101,7 @@ router.post(
   '/post/comment/:id',
   [
     auth,
-    check('text', 'Text is required')
+    check('content', 'Please add a comment')
       .not()
       .isEmpty(),
   ],

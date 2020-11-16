@@ -175,7 +175,7 @@ exports.removeLike = async (req, res) => {
     // update db
     await post.save();
 
-    return res.json(post.likes);
+    return res.status(200).json(post.likes);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');

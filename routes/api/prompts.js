@@ -8,8 +8,8 @@ const { promptLikeNotification } = require('../../scripts/mailgun');
 
 const router = express.Router();
 
-// @route   GET api/v1/prompt
-// @desc    Get all stories
+// @route   GET api/v1/prompts
+// @desc    Get all prompts
 // @access  PUBLIC
 router.get('/', async (req, res) => {
   try {
@@ -21,13 +21,34 @@ router.get('/', async (req, res) => {
   }
 });
 
+// @route   GET api/v1/prompt/:id
+// @desc    Get prompt by id
+// @access  PRIVATE
+router.get('/:id', auth, async (req, res) => {
+  try {
+    const prompt = await Prompt.findById(req.params.id);
+
+    // if no story with request id
+    if (!prompt) {
+      return res.status(404).json({ msg: 'Prompt not found' });
+    }
+    return res.json(prompt);
+  } catch (err) {
+    console.error(err.message);
+    if (err.kind === 'ObjectId') {
+      return res.status(404).json({ msg: 'Prompt not found' });
+    }
+    res.status(500).send('Server Error');
+  }
+});
+
 // @route   GET api/v1/prompt/myprompts
 // @desc    GET logged in users prompts
 // @access  Public
-router.get('/myprompts', auth, async (req, res) => {
+router.get('/me/prompts', auth, async (req, res) => {
   try {
     const profile = await Profile.findOne({
-      user: req.user.id
+      user: req.user.id,
     }).populate('prompts', ['title', 'likes']);
 
     // if no profile of user exists
@@ -39,27 +60,6 @@ router.get('/myprompts', auth, async (req, res) => {
     return res.json(profile);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server Error');
-  }
-});
-
-// @route   GET api/v1/prompt/:id
-// @desc    Get logged in users prompts by id
-// @access  PRIVATE
-router.get('/:id', auth, async (req, res) => {
-  try {
-    const prompt = await Prompt.findById(req.params.id);
-
-    // if no story with request id
-    if (!prompt) {
-      return res.status(404).json({ msg: 'Story not found' });
-    }
-    res.json(prompt);
-  } catch (err) {
-    console.error(err.message);
-    if (err.kind === 'ObjectId') {
-      return res.status(404).json({ msg: 'Story not found' });
-    }
     res.status(500).send('Server Error');
   }
 });
@@ -94,7 +94,7 @@ router.delete('/:id', auth, async (req, res) => {
   }
 });
 
-// @route   PUT api/v1/promipt/like/:id
+// @route   PUT api/v1/prompt/like/:id
 // @desc    Like a prompt
 // @access  PRIVATE
 router.put('/like/:id', auth, async (req, res) => {
@@ -103,8 +103,9 @@ router.put('/like/:id', auth, async (req, res) => {
 
     // check if prompt has already been liked
     if (
-      prompt.likes.filter(like => like.user.toString() === req.user.id).length >
-      0
+      prompt.likes.filter(
+        like => like.user.toString() === req.user.id,
+      ).length > 0
     ) {
       return res.status(400).json({ msg: 'Prompt already liked' });
     }
@@ -117,8 +118,8 @@ router.put('/like/:id', auth, async (req, res) => {
 
     // send email notifcation of prompt liked when over 10 times
     const user = await User.findById(prompt.user);
-    if (prompt.likes.length >= 10) {
-      promptLikeNotification(user.getMaxListeners, prompt.title);
+    if (prompt.likes.length === 10) {
+      promptLikeNotification(user.email, prompt.title);
     }
 
     res.json(prompt.likes);
@@ -137,10 +138,13 @@ router.put('/unlike/:id', auth, async (req, res) => {
 
     // check if story has already been liked
     if (
-      prompt.likes.filter(like => like.user.toString() === req.user.id)
-        .length === 0
+      prompt.likes.filter(
+        like => like.user.toString() === req.user.id,
+      ).length === 0
     ) {
-      return res.status(400).json({ msg: 'Prompt has not yet been liked' });
+      return res
+        .status(400)
+        .json({ msg: 'Prompt has not yet been liked' });
     }
 
     // get remove index
@@ -176,7 +180,7 @@ router.post(
       .isEmpty(),
     check('content', 'Content is required')
       .not()
-      .isEmpty()
+      .isEmpty(),
   ],
   async (req, res) => {
     // if errors from validation exists
@@ -185,13 +189,16 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
     try {
-      const user = await User.findById(req.user.id).select('-password');
+      const user = await User.findById(req.user.id).select(
+        '-password',
+      );
       const profile = await Profile.findOne({ user: req.user.id });
 
       // if no profile
       if (!profile) {
         return res.status(400).json({
-          msg: 'Must first create a profile before submitting stories'
+          msg:
+            'Must first create a profile before submitting stories',
         });
       }
 
@@ -217,10 +224,10 @@ router.post(
       console.warn(err.message);
       res.status(500).send('Server Error');
     }
-  }
+  },
 );
 
-// @route   POST api/v1/promipt/comment/:id
+// @route   POST api/v1/prompts/comment/:id
 // @desc    CREATE a comment on a prompt
 // @access  Private
 router.post(
@@ -229,7 +236,7 @@ router.post(
     auth,
     check('text', 'Text is required')
       .not()
-      .isEmpty()
+      .isEmpty(),
   ],
   async (req, res) => {
     // if errors from validation exists
@@ -238,26 +245,36 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
     try {
-      const user = await User.findById(req.user.id).select('-password');
+      const user = await User.findById(req.user.id).select(
+        '-password',
+      );
       const prompt = await Prompt.findById(req.params.id);
       const profile = await Profile.findOne({ user: req.user.id });
 
       // if no profile
       if (!profile) {
         return res.status(400).json({
-          msg: 'Must first create a profile before submitting stories'
+          msg:
+            'Must first create a profile before submitting stories',
         });
       }
 
       // destructure request body
-      const { name, penName, text } = req.body;
+      const { text } = req.body;
+
+      // hold this mayne need it
+      // const { name, penName, text } = req.body;
 
       // init new instance of story
       const newComment = {};
       newComment.user = req.user.id;
       newComment.text = text;
-      if (name) newComment.name = user.name;
-      if (penName) newComment.penName = profile.penName;
+      newComment.name = user.name;
+      newComment.penName = profile.penName;
+
+      // hold on this mayne need it
+      // if (name) newComment.name = user.name;
+      // if (penName) newComment.penName = profile.penName;
 
       // unshift new comment and update db
       await prompt.comments.unshift(newComment);
@@ -268,10 +285,10 @@ router.post(
       console.warn(err.message);
       res.status(500).send('Server Error');
     }
-  }
+  },
 );
 
-// @route   DELETE api/v1/story/comment/:id/:comment_id
+// @route   DELETE api/v1/prompts/comment/:id/:comment_id
 // @desc    Delete comment
 // @access  Private
 router.delete('/comment/:id/:comment_id', auth, async (req, res) => {
@@ -280,7 +297,7 @@ router.delete('/comment/:id/:comment_id', auth, async (req, res) => {
 
     // Get comment
     const comment = prompt.comments.find(
-      com => com.id === req.params.comment_id
+      com => com.id === req.params.comment_id,
     );
 
     // Check if comment exists
@@ -303,7 +320,7 @@ router.delete('/comment/:id/:comment_id', auth, async (req, res) => {
 
     // update db and return response
     await prompt.save();
-    res.json(prompt.comments);
+    return res.json(prompt.comments);
   } catch (err) {
     console.error(err.message);
     return res.status(500).send('Server Error');
@@ -322,7 +339,9 @@ router.get('/trending/all', auth, async (req, res) => {
 
     // if not stories then they are not paid user
     if (!prompts) {
-      return res.status(400).json({ msg: 'Upgrade now to see stories' });
+      return res
+        .status(400)
+        .json({ msg: 'Upgrade now to see stories' });
     }
 
     return res.status(200).json(prompts);

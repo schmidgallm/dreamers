@@ -11,7 +11,7 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   try {
     const profiles = await Profile.find({}).populate('user', 'name');
-    res.json(profiles);
+    return res.json(profiles);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
@@ -24,23 +24,37 @@ router.get('/', async (req, res) => {
 router.get('/users/:user_id', async (req, res) => {
   try {
     const profile = await Profile.find({ user: req.params.user_id })
-      .populate('user', 'name')
-      .populate('stories', ['title', 'likes', 'comments', 'publishedDate'])
-      .populate('prompts', ['title', 'likes', 'comments', 'publishedDate']);
+      .populate('user', ['name', 'date'])
+      .populate('stories', [
+        'title',
+        'likes',
+        'comments',
+        'publishedDate',
+      ])
+      .populate('prompts', [
+        'title',
+        'likes',
+        'comments',
+        'publishedDate',
+      ]);
 
     // if no profile
     if (!profile) {
-      return res.status(400).json({ msg: 'No profile yet...such sadness' });
+      return res
+        .status(400)
+        .json({ msg: 'No profile yet...such sadness' });
     }
 
     // return profile
-    res.json(profile);
+    return res.json(profile);
   } catch (err) {
     console.error(err.message);
 
     // Avoid server error message from valid objectIds in request param
     if (err.kind === 'ObjectId') {
-      return res.status(400).json({ msg: 'No profile yet...such sadness' });
+      return res
+        .status(400)
+        .json({ msg: 'No profile yet...such sadness' });
     }
     res.status(500).send('Server Error');
   }
@@ -53,19 +67,31 @@ router.get('/me', auth, async (req, res) => {
   try {
     // fine profile from user and populate with name from users collection
     const profile = await Profile.findOne({
-      user: req.user.id
+      user: req.user.id,
     })
       .populate('user', 'name')
-      .populate('stories', ['title', 'likes', 'comments', 'publishedDate'])
-      .populate('prompts', ['title', 'likes', 'comments', 'publishedDate']);
+      .populate('stories', [
+        'title',
+        'likes',
+        'comments',
+        'publishedDate',
+      ])
+      .populate('prompts', [
+        'title',
+        'likes',
+        'comments',
+        'publishedDate',
+      ]);
 
     // if not pofile of user exists
     if (!profile) {
-      return res.status(400).json({ msg: 'No profile...such sadness' });
+      return res
+        .status(400)
+        .json({ msg: 'No profile...such sadness' });
     }
 
     // return profile
-    res.json(profile);
+    return res.json(profile);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
@@ -84,7 +110,7 @@ router.post('/', auth, async (req, res) => {
     favoriteBook,
     favoriteAuthor,
     stories,
-    prompts
+    prompts,
   } = req.body;
 
   // init profile object
@@ -107,7 +133,7 @@ router.post('/', auth, async (req, res) => {
       profile = await Profile.findOneAndUpdate(
         { user: req.user.id },
         { $set: profileFields },
-        { new: true }
+        { new: true },
       );
 
       return res.json(profile);
@@ -137,7 +163,7 @@ router.delete('/', auth, async (req, res) => {
     // remove user
     await User.findOneAndRemove({ _id: req.user.id });
 
-    res.json({ msg: 'User deleted' });
+    return res.json({ msg: 'User deleted' });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');

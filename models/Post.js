@@ -1,42 +1,24 @@
 // Dependencies
 const mongoose = require('mongoose');
 
-const StorySchema = new mongoose.Schema({
+const PostSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
   },
-  name: {
-    type: String,
-  },
   penName: {
     type: String,
+    required: true,
   },
   title: {
     type: String,
     required: true,
   },
-  genre: {
+  subThread: {
     type: String,
     required: true,
   },
-  synopsis: {
-    type: String,
-    required: true,
-  },
-  mimetype: {
-    type: String,
-    required: true,
-  },
-  ETag: {
-    type: String,
-    required: true,
-  },
-  location: {
-    type: String,
-    required: true,
-  },
-  key: {
+  content: {
     type: String,
     required: true,
   },
@@ -54,19 +36,6 @@ const StorySchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user',
       },
-      text: {
-        type: String,
-      },
-      name: {
-        type: String,
-      },
-      penName: {
-        type: String,
-      },
-      date: {
-        type: Date,
-        default: Date.now,
-      },
     },
   ],
   publishedDate: {
@@ -75,6 +44,6 @@ const StorySchema = new mongoose.Schema({
   },
 });
 
-const Story = mongoose.model('story', StorySchema);
+const Post = mongoose.model('post', PostSchema);
 
-module.exports = Story;
+module.exports = Post;

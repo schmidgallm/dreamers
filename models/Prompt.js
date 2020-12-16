@@ -4,59 +4,67 @@ const mongoose = require('mongoose');
 const PromptSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'user'
+    ref: 'user',
   },
   name: {
-    type: String
+    type: String,
   },
   penName: {
-    type: String
+    type: String,
   },
   title: {
     type: String,
-    required: true
+    required: true,
   },
   genre: {
     type: String,
-    required: true
+    required: true,
   },
   content: {
     type: String,
-    required: true
+    required: true,
   },
   likes: [
     {
       user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'user'
-      }
-    }
+        ref: 'user',
+      },
+    },
   ],
   comments: [
     {
       user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'user'
+        ref: 'user',
       },
       text: {
-        type: String
+        type: String,
       },
       name: {
-        type: String
+        type: String,
       },
       penName: {
-        type: String
+        type: String,
       },
       date: {
         type: Date,
-        default: Date.now
-      }
-    }
+        default: Date.now,
+      },
+      likes: [
+        {
+          user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'user',
+          },
+        },
+      ],
+    },
   ],
   publishedDate: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 
 const Prompt = mongoose.model('prompt', PromptSchema);
